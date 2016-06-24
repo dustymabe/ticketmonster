@@ -1,0 +1,25 @@
+version: "2"
+services:
+  db:
+    container_name: "db"
+    image: dustymabe/mysql
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=ticketmonster
+      - POSTGRES_PASSWORD=ticketmonster-docker
+  modcluster:
+    container_name: "modcluster"
+    image: karm/mod_cluster-master-dockerhub
+    environment:
+      - MODCLUSTER_NET=192. 172. 10. 179. 213.
+      - MODCLUSTER_PORT=80
+    ports:
+      - "80:80"
+  wildfly:
+    container_name: "wildfly"
+    image: wildfly
+    build: /work/Dockerfiles/ticketmonster-ha/
+    links:
+      - db
+      - modcluster
