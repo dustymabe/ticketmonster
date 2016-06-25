@@ -1,8 +1,8 @@
 #!/bin/bash
 set -eu
 #set -x
-export OPENSHIFT_HOST="${OPENSHIFT_HOST:=10.1.2.3:8443}"
-export DOCKER_HOST="${DOCKER_HOST:=tcp://10.1.2.2:2376}"
+export OPENSHIFT_HOST="${OPENSHIFT_HOST:=10.1.2.2:8443}"
+export DOCKER_HOST="${DOCKER_HOST:=tcp://10.1.2.3:2376}"
 WORKSPACE=${WORKSPACE:=/sharedfolder/github.com/eivantsov/ticketmonster/}
 
 OUTPUT='/dev/stdout'
@@ -21,7 +21,7 @@ function build() {
   echo -e "### Fetched revision $SHA1\n"
 
   echo -e "### Running Maven build...\n"
-  mvn package &> $OUTPUT
+  scl enable maven30 -- mvn package &> $OUTPUT
   cp target/ticket-monster.war misc/Dockerfiles/ticketmonster-ha/ticket-monster.war &> $OUTPUT
   # Silently deploy/build in openshift
   openshift &> $OUTPUT
@@ -41,6 +41,7 @@ function openshift() {
   pushd /tmp/demo/
   sed -i 's|/work/|./|' container.yml
   oc login --insecure-skip-tls-verify=true $OPENSHIFT_HOST -u openshift-dev -p devel
+  oc get project production || oc new-project production
   oc project production
   henge -provider openshift container.yml  | oc create -f -
   sleep 5 # wait a sec, otherwise race conditions happen
