@@ -50,6 +50,8 @@ Vagrant.configure(2) do |config|
     config.registration.password = ENV['SUB_PASSWORD']
   end
 
+  config.servicemanager.services = "docker"
+
   config.vm.provision "shell", inline: <<-SHELL
     systemctl disable docker 2>&1
     systemctl stop docker 2>&1
@@ -59,8 +61,10 @@ Vagrant.configure(2) do |config|
     yum update -y docker 
     echo 'OPTIONS="--selinux-enabled -H tcp://0.0.0.0:2376 -H unix:///var/run/docker.sock"' >> /etc/sysconfig/docker
     systemctl start docker
-    echo 'SELINUX=enforcing' >> /etc/selinux/config
+    sed -i 's/SELINUX=enforcing/SELINUX=permissive/' /etc/selinux/config
     setenforce 0
+    docker run -i --rm --entrypoint /bin/cat registry.access.redhat.com/openshift3/ose:v3.1.1.6 /usr/bin/oc > /usr/bin/oc
+    chmod +x /usr/bin/oc
     curl https://dl.dropboxusercontent.com/u/119656/henge > /usr/bin/henge
     chmod +x /usr/bin/henge
     docker pull dustymabe/ansible-container
