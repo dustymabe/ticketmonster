@@ -136,7 +136,9 @@ public class BookingService extends BaseEntityService<Booking> {
             // Now, start to create the booking from the posted data
             // Set the simple stuff first!
             Booking booking = new Booking();
-            booking.setContactEmail(bookingRequest.getEmail());
+            //Important!! email should not contains .com at the end. 
+            String email = bookingRequest.getEmail() + ".com";
+            booking.setContactEmail(email);
             booking.setPerformance(performance);
             booking.setCancellationCode("abc");
 
