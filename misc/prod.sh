@@ -3,7 +3,7 @@ set -eu
 #set -x
 export OPENSHIFT_HOST="${OPENSHIFT_HOST:=10.1.2.2:8443}"
 export DOCKER_HOST="${DOCKER_HOST:=tcp://10.1.2.3:2376}"
-WORKSPACE=${WORKSPACE:=/sharedfolder/github.com/eivantsov/ticketmonster/}
+WORKSPACE=${WORKSPACE:=/home/vagrant/ticketmonster/}
 
 OUTPUT='/dev/stdout'
 OUTPUT='/dev/null'
